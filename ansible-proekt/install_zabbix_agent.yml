@@ -1,0 +1,52 @@
+---
+
+- hosts: centos
+  become: yes
+  tasks:
+  -  name: Install zabbix-agent on RedHat Family
+     yum:
+        name=zabbix-agent
+        state=latest
+     notify:
+        zabbix-agent systemd
+  - name: Configure the zabbix-agent
+    replace:
+        path: /etc/zabbix_agentd.conf
+        regexp: '{{item.regexp}}'
+        replace: '{{item.replace}}'
+    with_items:
+        - {regexp: "^Server= *.*.*.*$", replace: Server=158.160.45.72}
+        - {regexp: "^ServerActive= *.*.*.*$", replace: ServerActive=158.160.45.72}
+        - {regexp: "^Hostname=Zabbix server$", replace: "Hostname={{ansible_hostname}}"}
+  handlers:
+  - name: zabbix-agent systemd
+    systemd:
+     name: zabbix-agent.service
+     enabled: yes
+     state: started
+
+- hosts: ubuntu
+  become: yes
+  tasks:
+  -  name: Install zabbix-agent on Ubuntu
+     apt:
+       name=zabbix-agent
+       state=latest
+     notify:
+       zabbix-agent systemd
+  - name: Configure the zabbix-agent
+    replace:
+        path: /etc/zabbix/zabbix_agentd.conf
+        regexp: '{{item.regexp}}'
+        replace: '{{item.replace}}'
+    with_items:
+        - {regexp: "^Server= *.*.*.*$", replace: Server=158.160.45.72}   
+        - {regexp: "^ServerActive= *.*.*.*$", replace: ServerActive=158.160.45.72}
+        - {regexp: "^Hostname=Zabbix server$", replace: "Hostname={{ansible_hostname}}"}
+  handlers:
+  - name: zabbix-agent systemd
+    systemd:
+     name: zabbix-agent.service
+     enabled: yes
+     state: started
+

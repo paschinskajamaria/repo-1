@@ -1,0 +1,17 @@
+---
+
+- hosts: elk
+  become: yes
+  tasks:
+  -  name: Download elasticsearch
+     get_url:
+        url: https://www.techplanet.pro/d/elasticsearch-7.17.1-amd64.deb
+        dest: /tmp/elasticsearch-7.17.1-amd64.deb
+  -  name: Install elasticsearch
+     shell: dpkg -i /tmp/elasticsearch-7.17.1-amd64.deb
+  handlers:
+  - name: elasticsearch systemd
+    systemd:
+     name: elasticsearch.service
+     enabled: yes
+     state: started

@@ -1,0 +1,17 @@
+---
+
+- hosts: elk
+  become: yes
+  tasks:
+  -  name: Download kibana
+     get_url:
+        url: https://www.techplanet.pro/d/kibana-7.17.1-amd64.deb
+        dest: /tmp/kibana-7.17.1-amd64.deb
+  -  name: Install kibana
+     shell: dpkg -i /tmp/kibana-7.17.1-amd64.deb
+  handlers:
+  - name: kibana systemd
+    systemd:
+     name: kibana.service
+     enabled: yes
+     state: started
